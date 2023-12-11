@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+  <head>
+    <title>猜數字遊戲</title>
+    <meta charset="utf-8" />
+  </head>
+
+  <body>
+    <h1>猜數字遊戲</h1>
+    <p>
+      <span id="lowerBound">1</span> 到
+      <span id="upperBound">100</span> 之間的數字，你猜是多少？
+    </p>
+    <input type="text" id="guessField" />
+    <input type="submit" value="猜!" id="guessSubmit" />
+    <input type="submit" value="揭曉答案" id="showAnswer" />
+    <p class="message"></p>
+    <input type="submit" value="再來一次!" id="playAgain" />
+    <p class="second"></p>
+  </body>
+
+  <script>
+    // Reset Game Function
+    function resetGame() {
+      targetNumber = Math.floor(Math.random() * 100) + 1;
+      console.log("answer: " + targetNumber);
+  
+      guessCount = 0;
+      lowerBound.textContent = "1";
+      upperBound.textContent = "100";
+      guessSubmit.disabled = false;
+      playAgain.disabled = false;
+      message.textContent = "";
+      guessField.value = "";
+      guessField.focus();
+      second.textContent = ""; // Clear the second paragraph
+    }
+  
+    function display(result) {
+    console.log(result);
+      second.textContent = result;
+    }
+  
+    function delayedDisplay(result, ms, callback) {
+      setTimeout(function () {
+        callback(result);
+      }, ms);
+    }
+  
+    // Random number
+    let targetNumber = Math.floor(Math.random() * 100) + 1;
+    console.log("answer: " + targetNumber);
+  
+    // Answer function
+    function answer() {
+      message.style.color = "black";
+      message.textContent = "答案: " + targetNumber;
+    }
+  
+    // Get element
+    const guessField = document.getElementById("guessField");
+    const guessSubmit = document.getElementById("guessSubmit");
+    const showAnswer = document.getElementById("showAnswer");
+    const message = document.querySelector(".message");
+    const lowerBound = document.getElementById("lowerBound");
+    const upperBound = document.getElementById("upperBound");
+    const playAgain = document.getElementById("playAgain");
+    const second = document.querySelector(".second");
+  
+    // Event listener
+    showAnswer.addEventListener("click", answer);
+    guessSubmit.addEventListener("click", checkGuess);
+    playAgain.addEventListener("click", resetGame);
+  
+    // Declare guessCount
+    let guessCount = 0;
+  
+    // Guess function
+    function checkGuess() {
+      guessCount += 1;
+      let userGuess = parseInt(guessField.value);
+      console.log("userGuess: " + userGuess);
+  
+      if (guessCount === 5) {
+        message.style.color = "red";
+        message.textContent = "You Failed! 答案是 " + targetNumber;
+        guessSubmit.disabled = true;
+        playAgain.disabled = true;
+
+        for (let i = 5; i > 0; i--) {
+          ms = (5 - i) * 1000; // Adjusted the delay calculation
+          delayedDisplay(i, ms, display);
+        }
+  
+        // After the countdown, reset the game
+        setTimeout(resetGame, 5000);
+      } else {
+        if (userGuess === targetNumber) {
+          message.textContent =
+            "恭喜你，你猜對了！你這次猜了" + guessCount + "次哦～";
+          message.style.color = "green";
+          guessSubmit.disabled = true;
+          playAgain.disabled = true;
+          for (let i = 5; i > 0; i--) {
+          ms = (5 - i) * 1000; // Adjusted the delay calculation
+          delayedDisplay(i, ms, display);
+        }
+        // After the countdown, reset the game
+        setTimeout(resetGame, 5000);
+        } else if (userGuess < targetNumber) {
+          lowerBound.textContent = userGuess;
+          message.textContent =
+            userGuess + "太小了，再試一次。目前猜了" + guessCount + "次";
+          message.style.color = "red";
+        } else if (userGuess > targetNumber) {
+          upperBound.textContent = userGuess;
+          message.textContent =
+            userGuess + "太大了，再試一次。目前猜了" + guessCount + "次";
+          message.style.color = "red";
+        } else {
+          guessCount -= 1;
+          message.textContent = "請輸入數字";
+          message.style.color = "red";
+        }
+      }
+  
+      guessField.value = "";
+      guessField.focus();
+    }
+  </script>
